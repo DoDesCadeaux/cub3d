@@ -21,9 +21,12 @@ FILE_EXTENSION	= .c
 
 SRCS_PATH		= ./srcs
 
+KEYBIND_PATH	= ./keybinds/
+
 INCLUDE_PATH	= ./includes
 
-SRCS			=
+SRCS			=	$(KEYBIND_PATH)keybinds.c		\
+					$(KEYBIND_PATH)close_on_click.c	\
 
 MAIN			= main.c
 

@@ -12,16 +12,6 @@
 
 #include "../includes/cub3d.h"
 
-int	keybinds(int keycode, t_cube *cube)
-{
-	if (keycode == ESC)
-	{
-		mlx_destroy_window(cube->mlx, cube->window);
-		exit(0);
-	}
-	return (0);
-}
-
 int main(void)
 {
 	t_cube *cube;
@@ -38,5 +28,6 @@ int main(void)
 	cube->address = mlx_get_data_addr(cube->img, &cube->bits_per_pixel,
 									  	&cube->line_length, &cube->endian);
 	mlx_hook(cube->window, 2, 1L<<0, keybinds, cube);
+	mlx_hook(cube->window, 17, 0L, close_on_click, cube);
 	mlx_loop(cube->mlx);
 }

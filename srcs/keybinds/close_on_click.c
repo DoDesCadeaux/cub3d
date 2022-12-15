@@ -1,36 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
+/*   close_on_click.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dduraku <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/12/15 13:47:56 by dduraku           #+#    #+#             */
-/*   Updated: 2022/12/15 13:47:57 by dduraku          ###   ########.fr       */
+/*   Created: 2022/12/15 15:08:35 by dduraku           #+#    #+#             */
+/*   Updated: 2022/12/15 15:08:42 by dduraku          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <math.h>
-#include "../mlx/mlx.h"
+#include "../../includes/cub3d.h"
 
-#define ESC 53
-
-typedef struct s_cube
+int	close_on_click(int keycode)
 {
-	void	*mlx;
-	void	*window;
-	void	*img;
-	char	*address;
-
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
-
-}		t_cube;
-
-//Raccourcis clavier
-int	keybinds(int keycode, t_cube *cube);
-int	close_on_click(int keycode);
+	if (keycode)
+		exit(EXIT_SUCCESS);
+	return (0);
+}
