@@ -14,7 +14,7 @@
 
 int	keybinds(int keycode, t_cube *cube)
 {
-	if (keycode == ESC)
+	if (keycode == ESC || keycode == 12)
 	{
 		mlx_destroy_window(cube->mlx, cube->window);
 		exit(0);

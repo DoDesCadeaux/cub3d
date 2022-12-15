@@ -29,6 +29,8 @@ typedef struct s_cube
 	int		line_length;
 	int		endian;
 
+	int		pos_x;
+	int		pos_y;
 }		t_cube;
 
 //Raccourcis clavier
