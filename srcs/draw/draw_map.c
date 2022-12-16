@@ -12,21 +12,12 @@
 
 #include "../../includes/cub3d.h"
 
-
 void	my_mlx_pixel_put(t_cube *cube, int x, int y, int color)
 {
 	char	*dst;
 
 	dst = cube->address + (y * cube->line_length + x * (cube->bits_per_pixel / 8));
 	*(unsigned int*)dst = color;
-}
-
-void	draw_player(t_cube *cube, int color, int x_size, int y_size)
-{
-	for (int i = 0; i < y_size; i++) {
-		for (int j = 0; j < x_size; j++)
-			mlx_pixel_put(cube->mlx, cube->window, j + cube->pos_x, i + cube->pos_y, color);
-	}
 }
 
 void	draw_walls(t_cube *cube, int color, int x_size, int y_size, int pos_x, int pos_y)
