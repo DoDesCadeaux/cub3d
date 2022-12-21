@@ -26,7 +26,6 @@ int map[] =
 
 int	move_player(int keycode, t_cube *cube)
 {
-	printf("Keycode : %d\n", keycode);
 	mlx_clear_window(cube->mlx, cube->window);
 	if (keycode == 113) // 0 Ecole, 113 MBP M1 (A GAUCHE)
 	{
@@ -58,7 +57,7 @@ int	move_player(int keycode, t_cube *cube)
 		exit(0);
 	mlx_put_image_to_window(cube->mlx, cube->window, cube->img, 0, 0);
 	draw_player(cube, 0xFF0053, 10, 10);
-	drawline(cube, 0xFF0000);
+	/*drawline(cube, 0xFF0000);*/
 	draw_rays(cube, map);
 	return 0;
 }
