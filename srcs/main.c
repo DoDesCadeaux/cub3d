@@ -29,8 +29,8 @@ int	main(void)
 	cube = malloc(sizeof(t_cube));
 	if (!cube)
 		return 1;
-	cube->player.px = 50;
-	cube->player.py = 50;
+	cube->player.px = 100;
+	cube->player.py = 100;
 	cube->player.pdx = cos(cube->player.pa) * 5;
 	cube->player.pdy = sin(cube->player.pa) * 5;
 	cube->mlx = mlx_init();

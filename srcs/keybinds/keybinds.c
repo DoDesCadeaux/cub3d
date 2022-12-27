@@ -27,7 +27,7 @@ int map[] =
 int	move_player(int keycode, t_cube *cube)
 {
 	mlx_clear_window(cube->mlx, cube->window);
-	if (keycode == 113) // 0 Ecole, 113 MBP M1 (A GAUCHE)
+	if (keycode == KEY_A) // 0 Ecole, 113 MBP M1 (A GAUCHE)
 	{
 		cube->player.pa -= 0.1;
 		if (cube->player.pa < 0)
@@ -35,12 +35,12 @@ int	move_player(int keycode, t_cube *cube)
 		cube->player.pdx = cos(cube->player.pa) * 5;
 		cube->player.pdy = sin(cube->player.pa) * 5;
 	}
-	else if (keycode == 115) // 1 Ecole, MBP M1 115 (DERRIERE)
+	else if (keycode == KEY_S) // 1 Ecole, MBP M1 115 (DERRIERE)
 	{
 		cube->player.px -= cube->player.pdx;
 		cube->player.py -= cube->player.pdy;
 	}
-	else if (keycode == 100) //2 Ecole, MBP M1
+	else if (keycode == KEY_D) //2 Ecole, MBP M1
 	{
 		cube->player.pa += 0.1;
 		if (cube->player.pa > 2 * PI)
@@ -48,12 +48,12 @@ int	move_player(int keycode, t_cube *cube)
 		cube->player.pdx = cos(cube->player.pa) * 5;
 		cube->player.pdy = sin(cube->player.pa) * 5;
 	}
-	else if (keycode == 122) //13 ECOLE, 122 MBP M1 (TOUT DROIT)
+	else if (keycode == KEY_W) //13 ECOLE, 122 MBP M1 (TOUT DROIT)
 	{
 		cube->player.px += cube->player.pdx;
 		cube->player.py += cube->player.pdy;
 	}
-	else if (keycode == 65307)
+	else if (keycode == ESC) //53 ECOLE, 65307 MBP M1
 		exit(0);
 	mlx_put_image_to_window(cube->mlx, cube->window, cube->img, 0, 0);
 	draw_player(cube, 0xFF0053, 10, 10);
