@@ -22,7 +22,8 @@
 # include <sys/stat.h>
 # include <limits.h>
 # include <math.h>
-# include "../mlx/mlx.h"
+//# include "../mlx/mlx.h"
+# include </usr/X11/include/mlx.h> //Path de la minilibx Pauline
 # include "keycodes.h"
 
 /*Error messages for argument parding*/
@@ -58,14 +59,37 @@
 
 /*Define MATH */
 # define PI	3.141592653589793238
-# define P2  PI / 2
-# define P3  3 * PI / 2
+# define P2  1.57079632679
+# define P3  4.71238898038
 # define DR  0.0174533
 
-# define SOUTH  PI / 2
-# define NORTH  3 * PI / 2
+# define SOUTH  1.57079632679
+# define NORTH  4.71238898038
 # define WEST	PI
-# define EAST	2 * PI
+# define EAST	6.28318530718
+
+/*Define Movement and rotation speed*/
+# define MOVE_SPEED	0.3
+# define ROT_SPEED	0.04
+
+
+
+
+
+/*Enum pos*/
+enum e_position
+{
+	X,
+	Y,
+	DIST
+};
+
+/*Enum type*/
+enum e_type
+{
+	HORIZONTAL,
+	VERTICAL
+};
 
 /*enum color*/
 enum e_color
@@ -83,9 +107,19 @@ enum e_texture
 	EA
 };
 
+typedef struct s_key
+{
+	int w;
+	int	a;
+	int s;
+	int d;
+	int right;
+	int left;
+}	t_key;
+
 typedef struct s_player
 {
-	float 	px;
+	float	px;
 	float	py;
 	float	pdx;
 	float	pdy;
@@ -94,20 +128,20 @@ typedef struct s_player
 
 typedef struct s_cube
 {
-	void	*mlx;
-	void	*window;
-	void	*img;
-	char	*address;
+	void		*mlx;
+	void		*window;
 
-	int		bits_per_pixel;
-	int		line_length;
-	int		endian;
+	void		*img;
+	char		*address;
+	int			bits_per_pixel;
+	int			line_length;
+	int			endian;
 
-	int		pos_x;
-	int		pos_y;
+	int			pos_x;
+	int			pos_y;
 
-	t_player player;
-}		t_cube;
+	t_player	player;
+}	t_cube;
 
 typedef struct s_struct
 {
@@ -116,10 +150,15 @@ typedef struct s_struct
 	int		*color;
 	char	**texture;
 	double	*player;
-	size_t		height;
-	size_t		width;
+	size_t	height;
+	size_t	width;
+	float	map_s;
+	size_t	mini_s;
 	char	**map;
+	int		*int_map;
 	t_cube	*cube;
+	t_key	key;
+	int		pos_ray[2];
 }	t_struct;
 
 /*Parsing*/
@@ -142,6 +181,7 @@ int		first_line(char *line, int type);
 void	get_height(t_struct *data);
 char	*get_map(t_struct *data, char *line);
 void	only_good_char(t_struct *data);
+int		good_char(char c);
 void	update_with_space(t_struct *data);
 void	check_border(t_struct *data);
 void	check_around_space(t_struct *data);
@@ -164,15 +204,29 @@ int		ft_strcmp(char *s1, char *s2);
 int		msg_error(char *msg);
 
 //Raccourcis clavier
-int	close_on_click(int keycode);
-int keypress(int keycode, t_struct *data);
+int		close_on_click(int keycode);
+int		keypress(int keycode, t_struct *data);
 
 //Draw
-void	draw_player(t_cube *cube, int color, int x_size, int y_size);
+void	draw_player(t_struct *data, int color, int size_player);
+void	draw_mini_map(t_struct *data);
 void	my_mlx_pixel_put(t_cube *cube, int x, int y, int color);
-void	draw_walls(t_cube *cube, int color, int x_size, int y_size, int px, int py);
-void	draw_map_2D(t_struct *data, int color_floor, int color_wall);
+void	draw_map_2d(t_struct *data);
 void	drawline(t_cube *cube, int color, float x, float y);
+
+//Raycasting
+void	bresenham(t_struct *data, float ox, float oy, float *r);
+float	dist(float ax, float ay, float bx, float by);
+int		*dof_vertical(t_struct *data, float *ray, float *o, float ra);
+int		*dof_horizontal(t_struct *data, float *ray, float *o, float ra);
 void	draw_rays(t_struct *data);
+
+//3D
+void	bresenham3d(t_struct *data, float ox, float oy, float rx, float ry, int color);
+
+
+
+int keyrelease(int keycode, t_struct *data);
+int	keypress(int keycode, t_struct *data);
 
 #endif

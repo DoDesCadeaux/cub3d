@@ -5,14 +5,14 @@
 
 NAME	= cub3d
 CC 		= gcc
-CFLAGS	= -Wall -Wextra -Werror -Imlx # -Imlx POUR MINILIBX
+CFLAGS	= -Wall -Wextra -Werror -Imlx -g -O3# -Imlx POUR MINILIBX
 DFLAGS	= -MMD -MF $(@:.o=.d)
 MAKE 		= 		make
 MAKE_CLEAN	= 		make clean
 MAKE_FCLEAN = 		make fclean
 #COMPIL	= -Lmlx -lmlx -framework OpenGL -framework AppKit # SERT UNIQUEMENT POUR MINILIBX 19
-#COMPIL 	= -I /usr/X11/include -g -L /usr/X11/lib -l mlx -framework OpenGL -framework AppKit #Pauline
-COMPIL	= -I/usr/X11R6/include -I/usr/X11/include -L/usr/X11R6/lib -L/usr/X11/lib -lX11 -lXext -Lmlx -lmlx -framework OpenGL -framework AppKit
+#COMPIL 	= -I /usr/X11/include -g -L /usr/X11/lib -l mlx -framework OpenGL -framework AppKit -fsanitize=address#Pauline
+COMPIL	= -I/usr/X11R6/include -I/usr/X11/include -L/usr/X11R6/lib -L/usr/X11/lib -lX11 -lXext -lmlx -framework OpenGL -framework AppKit
 AUTHOR	= dduraku && pamartin
 DATE	= 15/12/2022
 
@@ -42,6 +42,9 @@ SRCS			=	$(KEYBIND_PATH)keybinds.c		\
 					$(KEYBIND_PATH)close_on_click.c	\
 					$(DRAW_PATH)draw_map.c			\
 					$(DRAW_PATH)draw_player.c		\
+					$(DRAW_PATH)ray_casting.c 		\
+					$(DRAW_PATH)utils.c 			\
+					$(DRAW_PATH)ray_casting_utils.c \
 					$(GNL)gnl.c 				$(GNL)gnl_utils.c \
                     $(PARS)parsing.c 			$(PARS)pars_line.c			$(PARS)pars_init.c 	\
 					$(PARS)pars_set_color.c		$(PARS)pars_set_texture.c 	$(PARS)pars_map.c	\

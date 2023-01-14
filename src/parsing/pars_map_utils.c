@@ -28,16 +28,15 @@ void	only_good_char(t_struct *data)
 		y = 0;
 		while (data->map[i][y])
 		{
-			if (data->map[i][y] != ' ' && data->map[i][y] != '1'
-				&& data->map[i][y] != '0' && data->map[i][y] != 'N'
-				&& data->map[i][y] != 'S' && data->map[i][y] != 'E'
-				&& data->map[i][y] != 'W')
+			if (!good_char(data->map[i][y]))
 				exit_map_parsing(data, INVALID_MAP, NULL);
 			check_player(data, data->map[i][y], i, y);
 			y++;
 		}
 		i++;
 	}
+	if (data->player[0] == -1)
+		exit_map_parsing(data, INVALID_MAP, NULL);
 }
 
 void	update_with_space(t_struct *data)

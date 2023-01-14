@@ -12,45 +12,84 @@
 
 #include "../../includes/cub.h"
 
-int	move_player(int keycode, t_struct *data)
+static void	key_move_player(t_struct *data)
 {
-	mlx_clear_window(data->cube->mlx, data->cube->window);
-	if (keycode == KEY_A) // 0 Ecole, 113 MBP M1 (A GAUCHE)
+	if (data->key.s == 1)
 	{
-		data->cube->player.pa -= 0.1;
+		
+		data->cube->player.px -= data->cube->player.pdx * MOVE_SPEED;
+		data->cube->player.py -= data->cube->player.pdy * MOVE_SPEED;
+
+	}
+	else if (data->key.w == 1)
+	{
+		data->cube->player.px += data->cube->player.pdx * MOVE_SPEED;	
+		data->cube->player.py += data->cube->player.pdy * MOVE_SPEED;
+	}
+}
+
+static void	key_move_cam(t_struct *data)
+{
+	if (data->key.a == 1)
+	{
+		data->cube->player.pa -= ROT_SPEED;
 		if (data->cube->player.pa < 0)
 			data->cube->player.pa += 2 * PI;
 		data->cube->player.pdx = cos(data->cube->player.pa) * 5;
 		data->cube->player.pdy = sin(data->cube->player.pa) * 5;
 	}
-	else if (keycode == KEY_S) // 1 Ecole, MBP M1 115 (DERRIERE)
+	else if (data->key.d == 1)
 	{
-		data->cube->player.px -= data->cube->player.pdx;
-		data->cube->player.py -= data->cube->player.pdy;
-	}
-	else if (keycode == KEY_D) //2 Ecole, MBP M1
-	{
-		data->cube->player.pa += 0.1;
+		data->cube->player.pa += ROT_SPEED;
 		if (data->cube->player.pa > 2 * PI)
 			data->cube->player.pa -= 2 * PI;
 		data->cube->player.pdx = cos(data->cube->player.pa) * 5;
 		data->cube->player.pdy = sin(data->cube->player.pa) * 5;
 	}
-	else if (keycode == KEY_W) //13 ECOLE, 122 MBP M1 (TOUT DROIT)
-	{
-		data->cube->player.px += data->cube->player.pdx;
-		data->cube->player.py += data->cube->player.pdy;
-	}
-	else if (keycode == ESC) //53 ECOLE, 65307 MBP M1
-		exit(0);
-	mlx_put_image_to_window(data->cube->mlx, data->cube->window, data->cube->img, 0, 0);
-	draw_player(data->cube, 0xFF0053, 10, 10);
-//	draw_rays(data);
-	return 0;
 }
 
-int keypress(int keycode, t_struct *data)
+int	move_player(int keycode, t_struct *data)
 {
-	move_player(keycode, data);
+	mlx_clear_window(data->cube->mlx, data->cube->window);
+	key_move_cam(data);
+	key_move_player(data);
+	if (keycode == ESC)
+		exit(0); //Leaks
+	data->cube->img = mlx_new_image(data->cube->mlx, 1024, 512);
+	data->cube->address = mlx_get_data_addr(data->cube->img,
+			&data->cube->bits_per_pixel, &data->cube->line_length,
+			&data->cube->endian);
+	draw_rays(data);
+	mlx_put_image_to_window(data->cube->mlx, data->cube->window,
+		data->cube->img, 0, 0);
+	return (0);
+}
+
+int keyrelease(int keycode, t_struct *data)
+{
+	if (keycode == KEY_W)
+		data->key.w = 0;
+	if (keycode == KEY_A)
+		data->key.a = 0;
+	if (keycode == KEY_S)
+		data->key.s = 0;
+	if (keycode == KEY_D)
+		data->key.d = 0;
+
+	return (0);
+}
+
+int	keypress(int keycode, t_struct *data)
+{
+	if (keycode == KEY_W)
+		data->key.w = 1;
+	if (keycode == KEY_A)
+		data->key.a = 1;
+	if (keycode == KEY_S)
+		data->key.s = 1;
+	if (keycode == KEY_D)
+		data->key.d = 1;
+	if (keycode == ESC)
+		exit(0);
 	return (0);
 }
