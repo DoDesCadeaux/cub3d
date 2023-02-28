@@ -56,7 +56,7 @@ static void	check_data(t_struct *data)
 			msg_error(MISSING);
 			exit (EXIT_FAILURE);
 		}
-		else if (!line) //A quoi ca sert ?
+		else if (!line)
 		{
 			ft_free(data->info);
 			close(data->fd);
@@ -64,6 +64,7 @@ static void	check_data(t_struct *data)
 		}
 		line = check_line(line, data);
 	}
+	ft_free(line);
 }
 
 void	parsing(int argc, char **argv, t_struct *data)

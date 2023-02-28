@@ -12,56 +12,52 @@
 
 #include "../../includes/cub.h"
 
-void	bresenham(t_struct *data, float ox, float oy, float *r)
+void	update_y_color(float *draw, t_struct *data, float end, t_ray *ray)
 {
-	float	dist_x;
-	float	dist_y;
-	float	max;
-
-	dist_x = r[X] - ox;
-	dist_y = r[Y] - oy;
-	if (ft_abs(dist_x) > ft_abs(dist_y))
-		max = ft_abs(dist_x);
-	else
-		max = ft_abs(dist_y);
-	while (ft_abs(r[X] - ox) != 0 || ft_abs(r[Y] - oy) != 0)
+	draw[Y + 2] = end;
+	if (end == 0)
 	{
-		if (ox >= 0 && ox < data->width * data->map_s && oy >= 0
-			&& oy < data->height * data->map_s)
-			my_mlx_pixel_put(data->cube, ox, oy, 0xFF0000);
-		ox += dist_x / max;
-		oy += dist_y / max;
+		draw[Y] = ray->line_o;
+		draw[4] = data->color[CEILING];
 	}
+	else if (end == WIN_H)
+	{
+		draw[Y] = ray->line_o + ray->line_h;
+		draw[4] = data->color[FLOOR];
+	}
+	else
+		draw[Y] = ray->line_o;
 }
 
-void	bresenham3d(t_struct *data, float ox, float oy, float rx, float ry, int color)
+float	update_end(float end, t_ray *ray)
 {
-	float	dist_x;
-	float	dist_y;
-	float	max;
-	int		i;
-
-	dist_x = rx - ox;
-	dist_y = ry - oy;
-	if (ft_abs(dist_x) > ft_abs(dist_y))
-		max = ft_abs(dist_x);
+	if (end == 0)
+		end = ray->line_o + ray->line_h;
+	else if (end == ray->line_o + ray->line_h)
+		end = WIN_H;
 	else
-		max = ft_abs(dist_y);
-	while (ft_abs(rx - ox) != 0 || ft_abs(ry - oy) != 0)
+		end = INT_MAX;
+	return (end);
+}
+
+void	draw_cwf(t_struct *data, int i, t_ray *ray)
+{
+	float	*draw;
+	float	end;
+
+	draw = malloc(sizeof(float) * 5);
+	if (!draw)
+		return ;
+	draw[X] = i + 0;
+	draw[X + 2] = i + 0;
+	end = 0;
+	while (end < INT_MAX)
 	{
-		if (ox >= 0 && ox < 1024 && oy >= 0
-			&& oy < 512)
-		{
-			i = 0;
-			while (i < 8 && ox + i < 1024)
-			{
-				my_mlx_pixel_put(data->cube, ox + i, oy, color);
-				i++;
-			}
-		}
-		ox += dist_x / max;
-		oy += dist_y / max;
+		update_y_color(draw, data, end, ray);
+		draw3d(data, draw, end, ray);
+		end = update_end(end, ray);
 	}
+	ft_free(draw);
 }
 
 float	dist(float ax, float ay, float bx, float by)

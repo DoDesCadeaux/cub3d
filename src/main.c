@@ -12,6 +12,37 @@
 
 #include "../includes/cub.h"
 
+void	init_img(t_struct *data)
+{
+	data->cube->image.img = mlx_new_image(data->cube->mlx, WIN_W,
+			WIN_H);
+	data->cube->image.address = mlx_get_data_addr(data->cube->image.img,
+			&data->cube->image.bits_per_pixel, &data->cube->image.line_length,
+			&data->cube->image.endian);
+}
+
+void	init_textures(t_struct *data)
+{
+	int	face;
+
+	face = NO;
+	while (face < 4)
+	{
+		data->cube->tex[face] = malloc(sizeof(t_img));
+		data->cube->tex[face]->img = mlx_xpm_file_to_image(&data->cube->mlx,
+				data->texture[face], &data->cube->tex[face]->w_text,
+				&data->cube->tex[face]->h_text);
+		if (!data->cube->tex[face]->img)
+			exit(msg_error(MALLOC));
+		data->cube->tex[face]->address
+			= mlx_get_data_addr(data->cube->tex[face]->img,
+				&data->cube->tex[face]->bits_per_pixel,
+				&data->cube->tex[face]->line_length,
+				&data->cube->tex[face]->endian);
+		face++;
+	}
+}
+
 void	init_cube(t_struct *data)
 {
 	data->cube = malloc(sizeof(t_cube));
@@ -25,20 +56,18 @@ void	init_cube(t_struct *data)
 	data->cube->mlx = mlx_init();
 	mlx_do_key_autorepeaton(data->cube->mlx);
 	data->cube->window = mlx_new_window(data->cube->mlx,
-			1024, 512, "cub3d");
-	data->cube->img = mlx_new_image(data->cube->mlx, 1024,
-			512);
-	data->cube->address = mlx_get_data_addr(data->cube->img,
-			&data->cube->bits_per_pixel, &data->cube->line_length,
-			&data->cube->endian);
+			WIN_W, WIN_H, "cub3d");
+	init_img(data);
+	init_textures(data);
 }
 
-int	move_player(int keycode, t_struct *data);
+static int	moving(void *arg)
+{
+	t_struct	*data;
 
-static int moving(void *arg) {
-	t_struct *data = arg;
+	data = arg;
 	move_player(-1, data);
-	return 0;
+	return (0);
 }
 
 int	main(int argc, char **argv)
@@ -56,5 +85,6 @@ int	main(int argc, char **argv)
 	mlx_hook(data->cube->window, 17, 0L, close_on_click, data->cube);
 	mlx_loop_hook(data->cube->mlx, moving, data);
 	mlx_loop(data->cube->mlx);
+	//system("leaks cub3d");
 	exit(0);
 }

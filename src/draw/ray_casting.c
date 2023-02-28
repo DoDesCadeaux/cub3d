@@ -12,122 +12,93 @@
 
 #include "../../includes/cub.h"
 
-void	update_data_ray(float *ray, float *o, int *dof)
+float	*init_data_ray(t_struct *data, float *element)
 {
-	ray[X] += o[X];
-	ray[Y] += o[Y];
-	dof[0] += 1;
+	if (element)
+		ft_free(element);
+	element = malloc(sizeof(float) * 3);
+	if (!element)
+		exit(msg_error(MALLOC));
+	element[X] = data->cube->player.px;
+	element[Y] = data->cube->player.py;
+	element[DIST] = 1000000;
+	return (element);
 }
 
-void	get_ray_value(t_struct *data, float *data_ray, float *ray, int *dof)
-{
-	data_ray[X] = ray[X];
-	data_ray[Y] = ray[Y];
-	data_ray[DIST] = dist(data->cube->player.px, data->cube->player.py,
-			data_ray[X], data_ray[Y]);
-	dof[0] = dof[1];
-}
-
-float	*get_data_ray(t_struct *data, float *data_ray, float ra, int type)
+float	*get_data_ray(t_struct *data, t_ray *ray, int type)
 {
 	int		*dof;
-	float	ray[2];
 	float	o[2];
-	int		m[2];
 
-	data_ray = malloc(sizeof(float) * 3);
-	data_ray[X] = data->cube->player.px;
-	data_ray[Y] = data->cube->player.py;
-	data_ray[DIST] = 1000000;
 	if (type == VERTICAL)
-		dof = dof_vertical(data, ray, o, ra);
+	{
+		ray->ver = init_data_ray(data, ray->ver);
+		dof = dof_vertical(data, ray->r, o, ray->ra);
+	}
 	else
-		dof = dof_horizontal(data, ray, o, ra);
+	{
+		ray->hor = init_data_ray(data, ray->hor);
+		dof = dof_horizontal(data, ray->r, o, ray->ra);
+	}
 	while (dof[0] < dof[1])
 	{
-		m[Y] = ((int)ray[Y] >> 6);
-		m[X] = ((int)ray[X] >> 6);
-		if (m[Y] >= 0 && m[X] >= 0 && m[Y] < (int)data->height
-			&& m[X] < (int)data->width && data->map[m[Y]][m[X]] == '1')
-			get_ray_value(data, data_ray, ray, dof);
+		if (is_wall(data, ray->r[X], ray->r[Y]))
+			get_ray_value(data, ray, dof, type);
 		else
-			update_data_ray(ray, o, dof);
+			update_data_ray(ray->r, o, dof);
 	}
-	return (data_ray);
+	ft_free(dof);
+	if (type == HORIZONTAL)
+		return (ray->hor);
+	else
+		return (ray->ver);
 }
 
-float	check_dist(float *ver, float *hor, float dist_t, float *ray)
+float	check_dist(t_ray *ray)
 {
-	if (ver[DIST] < hor[DIST])
+	if (ray->ver[DIST] < ray->hor[DIST])
 	{
-		ray[X] = ver[X];
-		ray[Y] = ver[Y];
-		dist_t = ver[DIST];
+		ray->r[X] = ray->ver[X];
+		ray->r[Y] = ray->ver[Y];
+		ray->dist = ray->ver[DIST];
+		ray->texture[RENDER_TEXT] = ray->texture[VERTICAL];
 	}
 	else
 	{
-		ray[X] = hor[X];
-		ray[Y] = hor[Y];
-		dist_t = hor[DIST];
+		ray->r[X] = ray->hor[X];
+		ray->r[Y] = ray->hor[Y];
+		ray->dist = ray->hor[DIST];
+		ray->texture[RENDER_TEXT] = ray->texture[HORIZONTAL];
 	}
-	return (dist_t);
+	return (ray->dist);
 }
 
 void	draw_rays(t_struct *data)
 {
-	int		r;
-	float	ra;
-	float	*ray;
-	float	*hor;
-	float	*ver;
-	float dist_t;
+	int				i;
+	static t_ray	ray;
+	float			small;
 
-	ray = malloc(sizeof(float) * 2);
-	ra = data->cube->player.pa - DR * 30;
-	if (ra < 0)
-		ra += 2 * PI;
-	if (ra > 2 * PI)
-		ra -= 2 * PI;
-	r = 0;
-	while (r < 60)
+	i = 0;
+	small = -FOV / 2;
+	ray.r = malloc(sizeof(float) * 3);
+	if (!ray.r)
+		exit(1);
+	while (i < WIN_W)
 	{
-		float	ca;
-		float line_o;
-		float line_h;
-
-		hor = get_data_ray(data, hor, ra, HORIZONTAL);
-		ver = get_data_ray(data, ver, ra, VERTICAL);
-		dist_t = check_dist(ver, hor, dist_t, ray);
-		if (dist_t < 20)
-		{
-			if (data->key.s == 1)
-			{
-				data->cube->player.px += data->cube->player.pdx * MOVE_SPEED;
-				data->cube->player.py += data->cube->player.pdy * MOVE_SPEED;
-			}
-			if (data->key.w == 1)
-			{
-				data->cube->player.px -= data->cube->player.pdx * MOVE_SPEED;	
-				data->cube->player.py -= data->cube->player.pdy * MOVE_SPEED;
-			}
-		}
-		ca = data->cube->player.pa - ra;
-		if (ca < 0)
-			ca += 2 * PI;
-		if (ca > 2 * PI)
-			ca -= 2 * PI;
-		dist_t = dist_t * cos(ca);
-		line_h = data->map_s * 320 / dist_t;
-		line_o = 160 - line_h / 2;
-		bresenham3d(data, r * 8 + 530, line_o, r * 8 + 530, 0, data->color[CEILING]);
-		bresenham3d(data, r * 8 + 530, line_o, r * 8 + 530, line_h + line_o, 0xFF0000);
-		bresenham3d(data, r * 8 + 530, line_h + line_o, r * 8 + 530, 512, data->color[FLOOR]);
-		ra += DR;
-		if (ra < 0)
-			ra += 2 * PI;
-		if (ra > 2 * PI)
-			ra -= 2 * PI;
-		r++;
+		ray.ra = data->cube->player.pa + atan(small);
+		ray.ra = update_angle(ray.ra);
+		ray.hor = get_data_ray(data, &ray, HORIZONTAL);
+		ray.ver = get_data_ray(data, &ray, VERTICAL);
+		ray.dist = check_dist(&ray);
+		ray.ca = data->cube->player.pa - ray.ra;
+		ray.ca = update_angle(ray.ca);
+		ray.line_h = data->map_s * 320 / (ray.dist * cos(ray.ca));
+		ray.line_o = 160 - ray.line_h / 2;
+		data->cube->ray = &ray;
+		draw_cwf(data, i, &ray);
+		small += FOV / WIN_W;
+		i++;
 	}
-
+	ft_free(ray.r);
 }
